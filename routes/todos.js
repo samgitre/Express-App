@@ -14,6 +14,12 @@ var todos =[
 
 router.get('/' , function (req, res) {
 
+    res.send('The TODO app');
+});
+
+
+router.get('/todo' , function (req, res) {
+
     res.json(todos);
 });
 
