@@ -20,7 +20,7 @@ var todos =[
     }];
 
 router.get('/todo' , function (req, res) {
-    res.json();
+    res.json(todos);
 });
 
 module.exports = router;
