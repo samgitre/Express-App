@@ -1,13 +1,6 @@
 var express = require('express');
 var router = express.Router();
 
-
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  var message = "Welcome to my todo app";
-  res.render('index', { title: 'The Express App', name: message });
-});
-
 var todos =[
     {
         id : 1,
@@ -19,8 +12,8 @@ var todos =[
         completed : false
     }];
 
-router.get('/todo' , function (req, res) {
-    res.json();
+router.get('/' , function (req, res) {
+    res.json(todos);
 });
 
 module.exports = router;
