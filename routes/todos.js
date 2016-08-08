@@ -1,16 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-var todos =[
-    {
-        id : 1,
-        description: 'Go to class by 4:30pm',
-        completed : false
-    },
-    { id : 2,
-        description: 'Go some coding now',
-        completed : false
-    }];
+var todos =[];
+
+var todoId = 1;
 
 router.get('/' , function (req, res) {
 
@@ -37,6 +30,14 @@ router.get('/todo/:id', function (req, res) {
     else {
         res.status(404).send();
     }
+});
+
+router.post('/addTodo', function (req, res) {
+   var body = req.body;
+    body.id = todoId++;
+    todos.push(body);
+
+    res.json(body);
 });
 
 module.exports = router;
