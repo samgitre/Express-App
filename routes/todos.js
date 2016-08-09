@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var _ = require('underscore');
 
 var todos =[];
 
@@ -18,12 +19,8 @@ router.get('/todo' , function (req, res) {
 
 router.get('/todo/:id', function (req, res) {
     var matchTodo = parseInt(req.params.id, 10);
-    var matchItems;
-    todos.forEach(function (match) {
-        if(matchTodo === match.id){
-            matchItems = match;
-        }
-    });
+    var matchItems = _.findWhere(todos, {id: matchTodo});
+
     if(matchItems){
         res.json(matchItems);
     }
