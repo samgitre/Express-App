@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var _ = require('underscore');
+var db = require('../db');
+
 
 var todos =[];
 
@@ -18,35 +20,56 @@ router.get('/todo' , function (req, res) {
 
     if(queryParams.hasOwnProperty('completed') && (queryParams.completed === 'true')){
         filteredTodos =_.where(filteredTodos, {completed :true});
-        
+
     }else if(queryParams.hasOwnProperty('completed') && (queryParams.completed === 'false')){
         filteredTodos = _.where(filteredTodos, {completed : false});
+    }
+
+    if(queryParams.hasOwnProperty('q') && queryParams.q.length >0){
+        filteredTodos = _.filter(filteredTodos, function (todo) {
+            return todo.description.toLowerCase().indexOf(queryParams.q.toLowerCase()) > -1;
+        });
     }
     res.json(filteredTodos);
 });
 
+
 router.get('/todo/:id', function (req, res) {
     var matchTodo = parseInt(req.params.id, 10);
-    var matchItems = _.findWhere(todos, {id: matchTodo});
 
-    if(matchItems){
-        res.json(matchItems);
-    }
-    else {
-        res.status(404).json('No todo found with id : ' +req.params.id);
-    }
+    db.todo.findById(matchTodo).then(function (todo) {
+        if(!!todo){
+            res.json(todo.toJSON());
+        }
+        else {
+            res.status(404).send('todo not found');
+        }
+    }, function (e) {
+        res.status(500).send(e.message);
+
+    });    // var matchItems = _.findWhere(todos, {id: matchTodo});
+    // if(matchItems){
+    //     res.json(matchItems);
+    // }
+    // else {
+    //     res.status(404).json('No todo found with id : ' +req.params.id);
+    // }
 });
 
 router.post('/addTodo', function (req, res) {
-
    var body = _.pick(req.body, 'description', 'completed');
-    if(!_.isBoolean(body.completed) || !_.isString(body.description) || !body.description.trim())
-    {
-     return  res.status(400).send();
-    }
-    body.description = body.description.trim();
-    body.id = todoId++;
-    todos.push(body);
+  db.todo.create(body).then(function (todo) {
+      res.json(todo.toJSON);
+  }, function (e) {
+      res.status(400).json(e.message);
+  });
+    // if(!_.isBoolean(body.completed) || !_.isString(body.description) || !body.description.trim())
+    // {
+    //  return  res.status(400).send();
+    // }
+    // body.description = body.description.trim();
+    // body.id = todoId++;
+    // todos.push(body);
     res.json(body);
 });
 
