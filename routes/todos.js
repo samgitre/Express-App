@@ -52,7 +52,7 @@ router.get('/todo/:id', function (req, res) {
 
     db.todo.findById(matchTodo).then(function (todo) {
         if(!!todo){
-            res.json(todo.toJSON().pretty());
+            res.json(todo.toJSON());
         }
         else {
             res.status(404).send('todo not found');
@@ -88,15 +88,40 @@ router.post('/addTodo', function (req, res) {
 
 router.delete('/todo/:id', function (req, res) {
     var matchTodo = parseInt(req.params.id, 10);
-    var matchItem = _.findWhere(todos, {id: matchTodo});
+    db.todo.destroy({
+        where :{
+            id : matchTodo
+        }        
+    }).then(function (deletedRows) {
+        if(deletedRows.length === 0){
+            res.status(404).json({
+                error : 'No item found with the id   ' + req.params.id
+            });
+        }
+        else {
+            res.status(200).json('deleted successfully');
+        }
+    }).then(function () {
+        res.status(500).send();
+    }).catch(function (e) {
+        res.json({
+            error : e.message
+        });
 
-    if(!matchItem){
-        res.status(404).json('No item found with id  ' + req.params.id);
-    }
-    else {
-        todos =_.without(todos, matchItem);
-        res.json(matchItem);
-    }
+    });
+
+
+
+
+    // var matchItem = _.findWhere(todos, {id: matchTodo});
+    //
+    // if(!matchItem){
+    //     res.status(404).json('No item found with id  ' + req.params.id);
+    // }
+    // else {
+    //     todos =_.without(todos, matchItem);
+    //     res.json(matchItem);
+    // }
 });
 
 router.put('/todo/:id', function (req, res) {
