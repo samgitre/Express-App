@@ -28,8 +28,8 @@ router.get('/todo' , function (req, res) {
             $like :'%' + query.q + '%'
         }
     }
-    db.todo.findAll({where : where}).then(function (todos) {
-        res.json(todos);
+    db.todo.findAll({where : where}).then(function (todo) {
+        res.json(todo);
     }, function (e) {
         res.status(500).send(e.message);
     });
