@@ -3,16 +3,14 @@ var router = express.Router();
 var _ = require('underscore');
 var db = require('../db');
 
+// var todos =[];
+// var todoId = 1;
 
-var todos =[];
-
-var todoId = 1;
 
 router.get('/' , function (req, res) {
 
     res.render('todo', {title : 'TODO APP'});
 });
-
 
 router.get('/todo' , function (req, res) {
     var query = req.query;
@@ -54,7 +52,7 @@ router.get('/todo/:id', function (req, res) {
 
     db.todo.findById(matchTodo).then(function (todo) {
         if(!!todo){
-            res.json(todo.toJSON());
+            res.json(todo.toJSON().pretty());
         }
         else {
             res.status(404).send('todo not found');

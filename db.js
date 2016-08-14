@@ -15,6 +15,7 @@ if(env === 'production'){
     'storage' : __dirname + '/data/todoData.sqlite'
 });
 }
+
 var db = {};
 db.todo = sequelize.import(__dirname + '/model/todo.js');
 db.sequelize = sequelize;
