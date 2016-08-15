@@ -126,29 +126,34 @@ router.delete('/todo/:id', function (req, res) {
 
 router.put('/todo/:id', function (req, res) {
     var todoId = parseInt(req.params.id, 10);
-    var matchItem = _.findWhere(todos, {id: todoId});
+    // var matchItem = _.findWhere(todos, {id: todoId});
+    var body = _.pick(req.body, 'description', 'completed');
+    var attributes ={};
 
-    var body = _.pick(req.body, 'completed', 'description');
-    var validAttributes ={};
+    if(body.hasOwnProperty('completed')){
+        attributes.completed = body.completed;
+    }
+    if(body.hasOwnProperty('description')){
+        attributes.description = body.description;
+    }
+    db.todo.findById(todoId).then(function (todo) {
+        if(todo){
+            return todo.update(attributes);
+        }
+        else {
+            res.status(404).json('Todo not found');
+        }
 
-    if (!matchItem){
-      return res.status(404).json('No item with id ' + req.params.id);
-    }
-    if(body.hasOwnProperty('completed') && (_.isBoolean(body.completed))){
-        validAttributes.completed = body.completed;
-    }
-    else if(body.hasOwnProperty('completed')){
-        res.status(400).json('Bad request');
-    }
-    if(body.hasOwnProperty('description') && (_.isString(body.description)) && body.description.trim().length > 0){
-        validAttributes.description = body.description;
-    }
-    else if(body.hasOwnProperty('description')){
-        res.status(400).json('Bad request');
-    }
+    }, function () {
+        res.status(500).json('internal error');
+    }).then(function (todo) {
+        res.send(todo.toJSON());
+    }, function (e) {
+        res.status(400).json(e.message);
+    });
 
-     matchItem =  _.extend(matchItem,validAttributes );
-    res.json(matchItem);
+    //  matchItem =  _.extend(matchItem,attributes );
+    // res.json(matchItem);
 });
 
 module.exports = router;
