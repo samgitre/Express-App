@@ -12,7 +12,7 @@ router.post('/users', function(req, res, next) {
 
   var body = _.pick(req.body, 'email', 'password');
   db.user.create(body).then(function (user) {
-    res.send(user.toJSON());
+    res.send(user.toPublicJSON());
   },function (e) {
     res.status(400).send(e);
       });

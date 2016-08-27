@@ -22,7 +22,6 @@ db.sequelize.sync().then(function () {
 });
 
 
-
 function normalizePort(val) {
   var port = parseInt(val, 10);
 
